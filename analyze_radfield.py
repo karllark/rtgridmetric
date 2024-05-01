@@ -33,33 +33,13 @@ if __name__ == "__main__":
     figsize = (10, 6)
     fig, ax = plt.subplots(figsize=figsize)
 
-    # Z
-    deltx = np.diff(rd, axis=0)
-    avex = 0.5 * (rd[0:-1, :, :] + rd[1:, :, :])
-    fdeltx = deltx/avex
-    histox = np.histogram(fdeltx, 100)
-    plt.plot(0.5*(histox[1][1:] + histox[1][0:-1]), histox[0], "b-", label="Z")
+    # use gradient function instead
+    grad = np.gradient(rd)
 
-    uncx = np.sqrt((unc2[0:-1, :, :] + unc2[1:, :, :]))
-    print(np.min(avex), np.max(avex))
-    print(np.min(uncx), np.max(uncx))
-    funcx = uncx/avex
-    histox = np.histogram(funcx, 100)
-    # plt.plot(0.5*(histox[1][1:] + histox[1][0:-1]), histox[0], "b--", label="Z unc")
-
-    # Y
-    deltx = np.diff(rd, axis=1)
-    avex = 0.5 * (rd[:, 0:-1, :] + rd[:, 1:, :])
-    fdeltx = deltx/avex
-    histox = np.histogram(fdeltx, 100)
-    plt.plot(0.5*(histox[1][1:] + histox[1][0:-1]), histox[0], label="Y")
-
-    # X
-    deltx = np.diff(rd, axis=2)
-    avex = 0.5 * (rd[:, :, 0:-1] + rd[:, :, 1:])
-    fdeltx = deltx/avex
-    histox = np.histogram(fdeltx, 100)
-    plt.plot(0.5*(histox[1][1:] + histox[1][0:-1]), histox[0], label="X")
+    klabel = ["Z", "Y", "X"]
+    for i in range(3):
+        histo = np.histogram(grad[i]/rd, 100)
+        plt.plot(0.5*(histo[1][1:] + histo[1][0:-1]), histo[0], label=klabel[i])
 
     ax.set_xlabel("fractional change between cells")
     ax.set_ylabel("# cells")
