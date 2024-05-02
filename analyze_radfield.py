@@ -13,12 +13,12 @@ if __name__ == "__main__":
 
     fname = args.filename
     rd = fits.getdata(fname)
-    unc = fits.getdata(fname.replace(".fits", "_unc.fits"))
+    # unc = fits.getdata(fname.replace(".fits", "_unc.fits"))
     # remove the last big x cell that has no dust, just the star
     rd = rd[0, 0:-1, :, :]
-    unc2 = np.square(unc[0, 0:-1, :, :])
-    print(np.min(rd), np.max(rd))
-    print(np.min(unc2), np.max(unc2))
+    # unc2 = np.square(unc[0, 0:-1, :, :])
+    # print(np.min(rd), np.max(rd))
+    # print(np.min(unc2), np.max(unc2))
 
     fontsize = 16
     font = {"size": fontsize}
@@ -38,7 +38,8 @@ if __name__ == "__main__":
 
     klabel = ["Z", "Y", "X"]
     for i in range(3):
-        histo = np.histogram(grad[i]/rd, 100)
+        gvals = grad[i] != 0.0
+        histo = np.histogram(grad[i][gvals]/rd[gvals], 100)
         plt.plot(0.5*(histo[1][1:] + histo[1][0:-1]), histo[0], label=klabel[i])
 
     ax.set_xlabel("fractional change between cells")

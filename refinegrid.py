@@ -1,6 +1,7 @@
 import copy
 import argparse
 import numpy as np
+import matplotlib.pyplot as plt
 
 from astropy.io import fits
 
@@ -13,6 +14,8 @@ if __name__ == "__main__":
         default=0.1,
         type=float,
     )
+    parser.add_argument("--png", help="save figure as a png file", action="store_true")
+    parser.add_argument("--pdf", help="save figure as a pdf file", action="store_true")
     args = parser.parse_args()
 
     rd = fits.getdata(f"{args.basename}_rad_field.fits")
@@ -35,16 +38,19 @@ if __name__ == "__main__":
     sub_tau = []
     sub_pos = []
 
+    subvals = np.zeros((rd.shape[0], rd.shape[1], rd.shape[2], 3))
+
     subgrid_index = 1
     for i in range(rd.shape[0]):
         for j in range(rd.shape[1]):
             for k in range(rd.shape[2]):
                 subn = np.full(3, 1)
                 for l in range(3):
-                    if grad[l][i, j, k] > args.fthres:
-                        subn[l] = (grad[l][i, j, k] // args.fthres) + 1
+                    if np.absolute(grad[l][i, j, k]) > args.fthres:
+                        subn[l] = (np.absolute(grad[l][i, j, k]) // args.fthres) + 1
                     else:
                         subn[l] = 1
+                subvals[i, j, k, :] = subn
                 # print(i, j, k, subn)
                 # setup subdivided cell
                 if np.prod(subn) > 1:
@@ -98,3 +104,32 @@ if __name__ == "__main__":
         hdul.append(fits.ImageHDU(np.transpose(cpos)))
         hdul[-1].header["PAR_GRID"] = 0
     hdul.writeto(f"{obase}_fthres{args.fthres}_pos.fits", overwrite=True)
+
+    fontsize = 16
+    font = {"size": fontsize}
+    plt.rc("font", **font)
+    plt.rc("lines", linewidth=1)
+    plt.rc("axes", linewidth=2)
+    plt.rc("xtick.major", width=2)
+    plt.rc("xtick.minor", width=2)
+    plt.rc("ytick.major", width=2)
+    plt.rc("ytick.minor", width=2)
+
+    figsize = (10, 6)
+    fig, ax = plt.subplots(figsize=figsize)
+
+    ax.hist(subvals[:, :, :, 0].flatten(), label="X")
+    ax.hist(subvals[:, :, :, 1].flatten(), label="Y")
+    ax.hist(subvals[:, :, :, 2].flatten(), label="Z")
+
+    plt.legend()
+
+    fig.tight_layout()
+
+    save_str = f"{args.basename}_subdivs"
+    if args.png:
+        fig.savefig(f"{save_str}.png")
+    elif args.pdf:
+        fig.savefig(f"{save_str}.pdf")
+    else:
+        plt.show()
