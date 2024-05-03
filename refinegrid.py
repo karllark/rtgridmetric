@@ -11,7 +11,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--fthres",
         help="fractional threshold above which to subdivide",
-        default=0.1,
+        default=0.05,
         type=float,
     )
     parser.add_argument("--png", help="save figure as a png file", action="store_true")

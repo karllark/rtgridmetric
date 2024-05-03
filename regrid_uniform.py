@@ -27,7 +27,7 @@ if __name__ == "__main__":
 
     # get the subgrids and insert them into new grid
     for i in range(mdata.shape[1]):
-        print("nx:", i)
+        print("nz:", i)
         nx = np.linspace(i*subsize[0], (i+1)*subsize[0]-1, subsize[0], dtype=int)
         for j in range(mdata.shape[2]):
             ny = np.linspace(j*subsize[1], (j+1)*subsize[1]-1, subsize[1], dtype=int)
