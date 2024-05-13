@@ -27,14 +27,21 @@ if __name__ == "__main__":
     figsize = (8, 6)
     fig, ax = plt.subplots(figsize=figsize)
 
-    # nphot = ["_1e4", "_1e5", ""]
-    nphot = ["_1e4", "_1e5"]
+    nphot = ["_1e4", "_1e5", ""]
     for cphot in nphot:
         eunc = fits.getdata(f"{basefile}{cphot}_rad_field_empirunc.fits")
         aunc = fits.getdata(f"{basefile}{cphot}_rad_field_aveunc.fits")
 
         for k in range(eunc.shape[2] - 1):
-            ax.plot(eunc[:, :, k], aunc[:, :, k], "ko")
+            ax.plot(eunc[:, :, k], aunc[:, :, k], "ko", alpha=0.2)
+
+    ax.plot([0.0, 1e-6], [0.0, 1e-6], "k-")
+
+    ax.set_xlabel("Empirical Unc")
+    ax.set_ylabel("Camps & Baes (2018) Unc")
+
+    ax.set_xscale("log")
+    ax.set_yscale("log")
 
     fig.tight_layout()
 
