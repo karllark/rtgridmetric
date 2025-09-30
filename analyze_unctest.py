@@ -2,7 +2,7 @@ import numpy as np
 from astropy.io import fits
 
 if __name__ == "__main__":
-    basefile = "output_unctest/dirty_gridmetric_slab_tau1_10_10_10"
+    basefile = "output_unctest/dirty_gridmetric_slab_tau5_10_10_10_1e4"
 
     # empirical unc
     adata = fits.getdata(f"{basefile}_rad_field.fits")

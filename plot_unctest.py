@@ -12,7 +12,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
 
-    basefile = "output_unctest_CB18/dirty_gridmetric_slab_tau1_10_10_10"
+    basefile = "output_unctest_CB18/dirty_gridmetric_slab_tau5_10_10_10"
 
     fontsize = 16
     font = {"size": fontsize}
@@ -28,6 +28,7 @@ if __name__ == "__main__":
     fig, ax = plt.subplots(figsize=figsize)
 
     nphot = ["_1e4", "_1e5", ""]
+    nphot = ["_1e4"]
     for cphot in nphot:
         eunc = fits.getdata(f"{basefile}{cphot}_rad_field_empirunc.fits")
         aunc = fits.getdata(f"{basefile}{cphot}_rad_field_aveunc.fits")

@@ -73,7 +73,7 @@ if __name__ == "__main__":
                 totcells += np.prod(subn)
 
     print(len(sub_pos))
-    print(totcells, 80 * 80 * 40, totcells / (80 * 80 * 40))
+    print(totcells, 40 * 40 * 40, totcells / (40 * 40 * 40))
 
     # write the new grid files
     obase = args.basename.replace("output", "input")
