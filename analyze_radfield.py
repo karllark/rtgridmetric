@@ -1,3 +1,4 @@
+import os.path
 import argparse
 import numpy as np
 import matplotlib.pyplot as plt
@@ -13,17 +14,20 @@ if __name__ == "__main__":
 
     fname = args.filename
     rd = fits.getdata(fname)
-    # unc = fits.getdata(fname.replace(".fits", "_unc.fits"))
     # remove the last big x cell that has no dust, just the star
     rd = rd[0, 0:-1, :, :]
-    # unc2 = np.square(unc[0, 0:-1, :, :])
-    # print(np.min(rd), np.max(rd))
-    # print(np.min(unc2), np.max(unc2))
 
-    fontsize = 16
+    fname_unc = fname.replace(".fits", "_unc.fits")
+    if os.path.isfile(fname):
+        unc = fits.getdata(fname.replace(".fits", "_unc.fits"))
+        unc = unc[0, 0:-1, :, :]
+    else:
+        unc = None
+
+    fontsize = 14
     font = {"size": fontsize}
     plt.rc("font", **font)
-    plt.rc("lines", linewidth=1)
+    plt.rc("lines", linewidth=2)
     plt.rc("axes", linewidth=2)
     plt.rc("xtick.major", width=2)
     plt.rc("xtick.minor", width=2)
@@ -37,10 +41,18 @@ if __name__ == "__main__":
     grad = np.gradient(rd)
 
     klabel = ["Z", "Y", "X"]
+    colors = ["r", "b", "g", "tab:purple"]
     for i in range(3):
         gvals = grad[i] != 0.0
         histo = np.histogram(grad[i][gvals]/rd[gvals], 100)
-        plt.plot(0.5*(histo[1][1:] + histo[1][0:-1]), histo[0], label=klabel[i])
+        plt.plot(0.5*(histo[1][1:] + histo[1][0:-1]), histo[0], label=klabel[i],
+                 color=colors[i], alpha=0.7)
+
+    if unc is not None:
+        gvals = unc != 0.0
+        histo = np.histogram(unc[gvals]/rd[gvals], 100)
+        plt.plot(0.5*(histo[1][1:] + histo[1][0:-1]), histo[0], label=f"Uncs",
+                    color=colors[3], linestyle="--", alpha=0.7)
 
     ax.set_xlabel("fractional change between cells")
     ax.set_ylabel("# cells")
