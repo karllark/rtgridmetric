@@ -18,7 +18,7 @@ if __name__ == "__main__":
     rd = rd[0, 0:-1, :, :]
 
     fname_unc = fname.replace(".fits", "_unc.fits")
-    if os.path.isfile(fname):
+    if os.path.isfile(fname_unc):
         unc = fits.getdata(fname.replace(".fits", "_unc.fits"))
         unc = unc[0, 0:-1, :, :]
     else:

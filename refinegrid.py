@@ -38,6 +38,9 @@ if __name__ == "__main__":
     sub_tau = []
     sub_pos = []
 
+    n_orig = np.prod(rd.shape)
+    print(f"# orig cells = {n_orig}")
+
     subvals = np.zeros((rd.shape[0], rd.shape[1], rd.shape[2], 3))
 
     subgrid_index = 1
@@ -72,8 +75,8 @@ if __name__ == "__main__":
 
                 totcells += np.prod(subn)
 
-    print(len(sub_pos))
-    print(totcells, 40 * 40 * 40, totcells / (40 * 40 * 40))
+    print(f"# subgrids = {len(sub_pos)}")
+    print(f"# new cells = {totcells}; new/orig = {totcells/n_orig}")
 
     # write the new grid files
     obase = args.basename.replace("output", "input")
