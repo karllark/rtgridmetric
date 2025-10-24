@@ -25,8 +25,8 @@ Workflow
 
 Generate a model with a regular single level grid.
 
-Analyze the differences between cells in the x,y,z directions using
-analyze_radfield.py
+Visualize the differences between cells in the x,y,z directions using
+plot_radfield_vis.py
 
 Generate an AMR grid based on a specific fractional threshold (default=0.05) using
 refinegrid.py
