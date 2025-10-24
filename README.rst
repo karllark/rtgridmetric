@@ -26,7 +26,7 @@ Workflow
 Generate a model with a regular single level grid.
 
 Visualize the differences between cells in the x,y,z directions using
-plot_radfield_vis.py
+plotting/plot_radfield_vis.py
 
 Generate an AMR grid based on a specific fractional threshold (default=0.05) using
 refinegrid.py
@@ -36,6 +36,11 @@ Run dirty on AMR grid.
 Collapse the AMR grid to a single, higher resolution grid using
 regrid_uniform.py
 
-Analyze the uniform grid using analyze_radfield.py.
+Analyze the uniform grid using plotting/plot_radfield_vis.py.
+
 Can also visualize the x,y grid slices using the higher res grid and
-the x, z grid slices using the transpose of the higher res grid.
+the x, z grid slices using the FITS file giving the transpose of the 
+higher res grid.
+
+Graphically visualize slices through the grid at fixed z and x values 
+using plotting/plot_grid_slice.py.
