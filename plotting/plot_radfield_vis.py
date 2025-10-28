@@ -59,7 +59,6 @@ if __name__ == "__main__":
     )
 
     xslice = np.transpose(rd[:, 5, :])
-    # xpos = ax3.imshow(xslice) #, interpolation='none')
     ax3.set_xlim(-5.0, -2.0)
     ax3.set_xlabel("z [pc]")
     ax3.set_ylim(-5.0, 5.0)
@@ -68,16 +67,14 @@ if __name__ == "__main__":
         xslice, norm=LogNorm(vmin=vmin, vmax=vmax), aspect="auto", extent=ax3.axis()
     )
 
-    # cb = plt.colorbar(xpos)
-    # fig.colorbar(xpos, ax=ax3)
-
     ax = ax1
 
     # use gradient function
     grad = np.gradient(rd)
 
     klabel = ["Z", "Y", "X"]
-    colors = ["r", "b", "g", "tab:purple"]
+    colors = ["tab:purple", "b", "g"]
+    lines = ["-", ":", "--"]
     for i in range(3):
         gvals = grad[i] != 0.0
         histo = np.histogram(np.absolute(grad[i][gvals]) / rd[gvals], 100)
@@ -86,7 +83,8 @@ if __name__ == "__main__":
             histo[0],
             label=klabel[i],
             color=colors[i],
-            alpha=0.7,
+            alpha=0.5,
+            linestyle=lines[i],
         )
 
     # compute D_A as defined in the paper
@@ -123,7 +121,7 @@ if __name__ == "__main__":
         label="DA",
         color="tab:olive",
         alpha=0.5,
-        linestyle="--"
+        linestyle="-.",
     )
 
     unc = None
