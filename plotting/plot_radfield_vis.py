@@ -36,7 +36,7 @@ if __name__ == "__main__":
     plt.rc("ytick.major", width=2)
     plt.rc("ytick.minor", width=2)
 
-    figsize = (7, 8)
+    figsize = (9, 11)
 
     fig = plt.figure(layout="constrained", figsize=figsize)
 
@@ -59,7 +59,6 @@ if __name__ == "__main__":
     )
 
     xslice = np.transpose(rd[:, 5, :])
-    print(xslice.shape)
     # xpos = ax3.imshow(xslice) #, interpolation='none')
     ax3.set_xlim(-5.0, -2.0)
     ax3.set_xlabel("z [pc]")
@@ -74,14 +73,14 @@ if __name__ == "__main__":
 
     ax = ax1
 
-    # use gradient function instead
+    # use gradient function
     grad = np.gradient(rd)
 
     klabel = ["Z", "Y", "X"]
     colors = ["r", "b", "g", "tab:purple"]
     for i in range(3):
         gvals = grad[i] != 0.0
-        histo = np.histogram(grad[i][gvals] / rd[gvals], 100)
+        histo = np.histogram(np.absolute(grad[i][gvals]) / rd[gvals], 100)
         ax1.plot(
             0.5 * (histo[1][1:] + histo[1][0:-1]),
             histo[0],
@@ -90,6 +89,44 @@ if __name__ == "__main__":
             alpha=0.7,
         )
 
+    # compute D_A as defined in the paper
+    # direction independent measure
+    DA = np.zeros(rd.shape)
+    for i in range(rd.shape[0]):
+        for j in range(rd.shape[1]):
+            for k in range(rd.shape[2]):
+                nDA = 0
+                if i > 0:
+                    DA[i, j, k] += abs(rd[i, j, k] - rd[i - 1, j, k]) / rd[i, j, k]
+                    nDA += 1
+                if i < rd.shape[0] - 1:
+                    DA[i, j, k] += abs(rd[i, j, k] - rd[i + 1, j, k]) / rd[i, j, k]
+                    nDA += 1
+                if j > 0:
+                    DA[i, j, k] += abs(rd[i, j, k] - rd[i, j - 1, k]) / rd[i, j, k]
+                    nDA += 1
+                if j < rd.shape[1] - 1:
+                    DA[i, j, k] += abs(rd[i, j, k] - rd[i, j + 1, k]) / rd[i, j, k]
+                    nDA += 1
+                if k > 0:
+                    DA[i, j, k] += abs(rd[i, j, k] - rd[i, j, k - 1]) / rd[i, j, k]
+                    nDA += 1
+                if k < rd.shape[2] - 1:
+                    DA[i, j, k] += abs(rd[i, j, k] - rd[i, j, k + 1]) / rd[i, j, k]
+                    nDA += 1
+                DA[i, j, k] /= nDA
+
+    histo = np.histogram(DA, 100)
+    ax1.plot(
+        0.5 * (histo[1][1:] + histo[1][0:-1]),
+        histo[0],
+        label="DA",
+        color="tab:olive",
+        alpha=0.5,
+        linestyle="--"
+    )
+
+    unc = None
     if unc is not None:
         gvals = unc != 0.0
         histo = np.histogram(unc[gvals] / rd[gvals], 100)
