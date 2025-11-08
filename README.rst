@@ -29,12 +29,12 @@ Visualize the differences between cells in the x,y,z directions using
 plotting/plot_radfield_vis.py
 
 Generate an AMR grid based on a specific fractional threshold (default=0.05) using
-refinegrid.py
+utils/refinegrid.py
 
 Run dirty on AMR grid.
 
 Collapse the AMR grid to a single, higher resolution grid using
-regrid_uniform.py
+utils/regrid_uniform.py
 
 Analyze the uniform grid using plotting/plot_radfield_vis.py.
 

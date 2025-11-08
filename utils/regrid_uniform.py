@@ -28,6 +28,7 @@ if __name__ == "__main__":
             mdata.shape[3] * subsize[2],
         )
     )
+    print("new size: ", nrd.shape)
 
     # also write the position files so that the visualizations work
     pos = fits.getdata(f"{args.basename}_pos.fits", 0)
@@ -92,7 +93,7 @@ if __name__ == "__main__":
                     for cnx in nx:
                         for cny in ny:
                             for cnz in nz:
-                                nrd[0, cnx, cny, cnz] = interp([cnx, cny, cnz])
+                                nrd[0, cnx, cny, cnz] = interp([cnx, cny, cnz])[0]
 
     hdul.close()
 

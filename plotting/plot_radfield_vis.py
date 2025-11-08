@@ -10,6 +10,9 @@ from astropy.io import fits
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("basename", help="base file name with radiation field")
+    parser.add_argument(
+        "--targ_threshold", default=0.95, type=float, help="target fractional threshold"
+    )
     parser.add_argument("--xval", default=0.0, type=float, help="x slice value")
     parser.add_argument("--zval", default=-3.5, type=float, help="z slice value")
     parser.add_argument("--png", help="save figure as a png file", action="store_true")
@@ -38,7 +41,7 @@ if __name__ == "__main__":
     plt.rc("ytick.major", width=2)
     plt.rc("ytick.minor", width=2)
 
-    figsize = (9, 11)
+    figsize = (7, 8)
 
     fig = plt.figure(layout="constrained", figsize=figsize)
 
@@ -60,7 +63,9 @@ if __name__ == "__main__":
     ax2.set_xlabel("x [pc]")
     ax2.set_ylim(-5.0, 5.0)
     ax2.set_ylabel("y [pc]")
-    zpos = ax2.imshow(zslice, aspect="auto", extent=ax2.axis(), origin="lower", cmap=cmap)
+    zpos = ax2.imshow(
+        zslice, aspect="auto", extent=ax2.axis(), origin="lower", cmap=cmap
+    )
     ax2.set_title(f"z = {pos[2, zidxs[0]]:.2f} pc")
 
     xidxs = np.argsort(np.absolute(pos[0, 0 : rd.shape[2]] - args.xval))
@@ -69,7 +74,9 @@ if __name__ == "__main__":
     ax3.set_xlabel("z [pc]")
     ax3.set_ylim(-5.0, 5.0)
     # ax3.set_ylabel("y [pc]")
-    xpos = ax3.imshow(xslice, aspect="auto", extent=ax3.axis(), origin="lower", cmap=cmap)
+    xpos = ax3.imshow(
+        xslice, aspect="auto", extent=ax3.axis(), origin="lower", cmap=cmap
+    )
     ax3.set_title(f"x = {pos[0, xidxs[0]]:.2f} pc")
 
     ax = ax1
@@ -79,14 +86,29 @@ if __name__ == "__main__":
 
     klabel = ["Z", "Y", "X"]
     colors = ["tab:purple", "b", "g"]
-    lines = ["-", ":", "--"]
+    lines = ["-.", ":", "--"]
     for i in range(3):
         gvals = grad[i] != 0.0
         histo = np.histogram(np.absolute(grad[i][gvals]) / rd[gvals], 100)
+        midvals = 0.5 * (histo[1][1:] + histo[1][0:-1])
+        histvals = np.array(histo[0], dtype=float) / np.sum(histo[0])
+
+        # determine cumulative sum
+        csum = np.cumulative_sum(histvals, dtype=float)
+        csum /= csum[-1]
+        thresval = np.interp(args.targ_threshold, csum, midvals)
         ax1.plot(
-            0.5 * (histo[1][1:] + histo[1][0:-1]),
-            histo[0],
-            label=klabel[i],
+            [thresval, thresval],
+            [0.0, 0.05],
+            color="k",
+            alpha=0.5,
+            linestyle=lines[i],
+        )
+
+        ax1.plot(
+            midvals,
+            histvals,
+            label=rf"{klabel[i]}; $f_t = {thresval:.3f}$",
             color=colors[i],
             alpha=0.5,
             linestyle=lines[i],
@@ -120,13 +142,24 @@ if __name__ == "__main__":
                 DA[i, j, k] /= nDA
 
     histo = np.histogram(DA, 100)
+    midvals = 0.5 * (histo[1][1:] + histo[1][0:-1])
+    histvals = np.array(histo[0], dtype=float) / np.sum(histo[0])
+
+    # determine cumulative sum
+    csum = np.cumulative_sum(histvals, dtype=float)
+    csum /= csum[-1]
+    thresval = np.interp(args.targ_threshold, csum, midvals)
     ax1.plot(
-        0.5 * (histo[1][1:] + histo[1][0:-1]),
-        histo[0],
-        label="DA",
+        [thresval, thresval], [0.0, 0.05], color="k", alpha=0.5, linestyle="-"
+    )
+
+    ax1.plot(
+        midvals,
+        histvals,
+        label=rf"DA; $f_t = {thresval:.3f}$",
         color="tab:olive",
         alpha=0.5,
-        linestyle="-.",
+        linestyle="-",
     )
 
     unc = None
@@ -143,9 +176,9 @@ if __name__ == "__main__":
         )
 
     ax1.set_xlabel("fractional change between cells")
-    ax1.set_ylabel("# cells")
+    ax1.set_ylabel("cell fraction")
 
-    ax1.legend()
+    ax1.legend(fontsize=0.8 * fontsize)
 
     save_str = f"{args.basename}_radfield_diffs_x{args.xval:.2f}_z{args.zval:.2f}"
     if args.png:

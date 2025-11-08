@@ -121,9 +121,12 @@ if __name__ == "__main__":
     figsize = (10, 6)
     fig, ax = plt.subplots(figsize=figsize)
 
-    ax.hist(subvals[:, :, :, 0].flatten(), label="X")
-    ax.hist(subvals[:, :, :, 1].flatten(), label="Y")
-    ax.hist(subvals[:, :, :, 2].flatten(), label="Z")
+    ax.hist(subvals[:, :, :, 0].flatten(), label="X", alpha=0.5)
+    ax.hist(subvals[:, :, :, 1].flatten(), label="Y", alpha=0.5)
+    ax.hist(subvals[:, :, :, 2].flatten(), label="Z", alpha=0.5)
+
+    ax.set_xlabel("subdivision factor")
+    ax.set_ylabel("number of cells")
 
     plt.legend()
 
