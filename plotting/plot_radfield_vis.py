@@ -7,6 +7,8 @@ from matplotlib.colors import LogNorm
 
 from astropy.io import fits
 
+from plot_grid_slice import plot_grid_slice
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("basename", help="base file name with radiation field")
@@ -51,33 +53,9 @@ if __name__ == "__main__":
     ax3 = fig.add_subplot(gs[0, 1])
     # ax4 = fig.add_subplot(gs[1, 2])
 
-    # vmin = np.min(rd)
-    # vmax = np.max(rd)
-    # cmap = "tab20b"
-    cmap = "afmhot"
-    # cmap = "cubehelix"
+    plot_grid_slice(ax2, args.basename, "xy", args.zval, lines=True)
 
-    zidxs = np.argsort(np.absolute(pos[2, 0 : rd.shape[0]] - args.zval))
-    zslice = rd[zidxs[0], :, :]
-    ax2.set_xlim(-5.0, 5.0)
-    ax2.set_xlabel("x [pc]")
-    ax2.set_ylim(-5.0, 5.0)
-    ax2.set_ylabel("y [pc]")
-    zpos = ax2.imshow(
-        zslice, aspect="auto", extent=ax2.axis(), origin="lower", cmap=cmap
-    )
-    ax2.set_title(f"z = {pos[2, zidxs[0]]:.2f} pc")
-
-    xidxs = np.argsort(np.absolute(pos[0, 0 : rd.shape[2]] - args.xval))
-    xslice = np.transpose(rd[:, xidxs[0], :])
-    ax3.set_xlim(-5.0, -2.0)
-    ax3.set_xlabel("z [pc]")
-    ax3.set_ylim(-5.0, 5.0)
-    # ax3.set_ylabel("y [pc]")
-    xpos = ax3.imshow(
-        xslice, aspect="auto", extent=ax3.axis(), origin="lower", cmap=cmap
-    )
-    ax3.set_title(f"x = {pos[0, xidxs[0]]:.2f} pc")
+    plot_grid_slice(ax3, args.basename, "yz", args.xval, lines=True)
 
     ax = ax1
 
