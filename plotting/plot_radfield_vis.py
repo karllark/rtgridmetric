@@ -51,15 +51,15 @@ if __name__ == "__main__":
     ax1 = fig.add_subplot(gs[1, :])
     ax2 = fig.add_subplot(gs[0, 0])
     ax3 = fig.add_subplot(gs[0, 1])
-    # ax4 = fig.add_subplot(gs[1, 2])
 
+    # display the xy and yz slices
     plot_grid_slice(ax2, args.basename, "xy", args.zval, lines=True)
-
     plot_grid_slice(ax3, args.basename, "yz", args.xval, lines=True)
 
-    ax = ax1
-
     # use gradient function
+    rd = np.transpose(fits.getdata(f"{args.basename}_uniform_rad_field.fits"))
+    rd = rd[:, :, :, 0]
+
     grad = np.gradient(rd)
 
     klabel = ["Z", "Y", "X"]
@@ -127,9 +127,7 @@ if __name__ == "__main__":
     csum = np.cumulative_sum(histvals, dtype=float)
     csum /= csum[-1]
     thresval = np.interp(args.targ_threshold, csum, midvals)
-    ax1.plot(
-        [thresval, thresval], [0.0, 0.05], color="k", alpha=0.5, linestyle="-"
-    )
+    ax1.plot([thresval, thresval], [0.0, 0.05], color="k", alpha=0.5, linestyle="-")
 
     ax1.plot(
         midvals,
